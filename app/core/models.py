@@ -9,10 +9,6 @@ REFER FULL EXAMPLE HERE -
 https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#a-full-example
 """
 
-from django.contrib.auth.models import User
-
-
-
 from django.db import models  # noqa
 from django.contrib.auth.models import (
     AbstractBaseUser,
