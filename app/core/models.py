@@ -42,7 +42,8 @@ class UserManager(BaseUserManager):
         # user without email normalization
         # user = self.model(email=email)
 
-        # best practice to hash password using super class method `set_password`
+        # best practice to hash password using super class method
+        # `set_password`
         user.set_password(password)
 
         # best practicec to use `using=self._db` when using multiple database
