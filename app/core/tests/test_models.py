@@ -15,9 +15,9 @@ class TestModel(TestCase):
         password = "testpass123"
 
         user = get_user_model().objects.create_user(
-            email=email,
-            password=password
+            email=email, password=password
         )
+
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
 
@@ -49,18 +49,14 @@ class TestModel(TestCase):
         """
 
         self.assertRaises(
-            ValueError,
-            get_user_model().objects.create_user,
-            "",
-            "password@321"
+            ValueError, get_user_model().objects.create_user, "", "password@321"
         )
 
     def test_create_super_user(self):
         """Test creating a superuser"""
 
         user = get_user_model().objects.create_superuser(
-            "test@example.com",
-            "password@321"
+            "test@example.com", "password@321"
         )
 
         self.assertTrue(user.is_superuser)
