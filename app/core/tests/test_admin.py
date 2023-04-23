@@ -16,8 +16,7 @@ class AdminSiteTests(TestCase):
 
         self.client = Client()
         self.admin_user = get_user_model().objects.create_superuser(
-            email="admin@example.com",
-            password="adminpass@123"
+            email="admin@example.com", password="adminpass@123"
         )
 
         # Why using force login?
@@ -28,9 +27,7 @@ class AdminSiteTests(TestCase):
         # self.client.login(email="admin@example.com", password="adminpass")
         self.client.force_login(self.admin_user)
         self.user = get_user_model().objects.create_user(
-            email="user@example.com",
-            password="testpass123",
-            name="Test User"
+            email="user@example.com", password="testpass123", name="Test User"
         )
 
     # admin interface user list endpoint
@@ -69,5 +66,3 @@ class AdminSiteTests(TestCase):
         url = reverse("admin:core_user_add")
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
-
-
