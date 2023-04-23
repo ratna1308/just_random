@@ -1,3 +1,4 @@
+
 ### Project structure
 ```
 aggregproject1    ( project root )
