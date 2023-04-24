@@ -14,9 +14,11 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
+from rest_framework import status
 
 
 CREATE_USER_URL = reverse("create")
+TOKEN_URL = reverse("token")
 
 
 class PublicUserApiTests(TestCase):
@@ -76,5 +78,14 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(CREATE_USER_URL, payload)
         self.assertEqual(res.status_code, 400)
 
+    def test_create_token_for_user(self):
+        """Test generates a token for valid user credentials"""
 
+        payload = {
+            "email": "test@example.com",
+            "password": "password@321",
+        }
 
+        res = self.client.post(TOKEN_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn("token", res.data)
