@@ -2,7 +2,10 @@
 Tests the user API
 
 # Endpoints
-- HTTP POST `/api/user/create/
+- HTTP POST `/api/user/create/`
+- HTTP POST `/api/user/token/`
+
+- HTTP GET, PUT, PATCH   -  `/api/user/me`
 
 # Types of endpoint based on authorization
 - public
@@ -132,5 +135,64 @@ class PublicUserApiTests(TestCase):
         res = self.client.get(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserApiTests(TestCase):
+    """Test API requests that require authentication"""
+
+    @staticmethod
+    def create_user(**params):
+        """returns user from whichever default user model"""
+
+        return get_user_model().objects.create_user(**params)
+
+    def setUp(self) -> None:
+        self.user = self.create_user(
+            email="test@example.com",
+            password="password@321",
+            name="Test name"
+        )
+        self.client = APIClient()
+
+        # TODO - refer
+        # https://www.django-rest-framework.org/api-guide/testing/#forcing-authentication
+        """
+        We are using `force_authenticate` function to set authentication flag
+        to `True`
+        We don't want to create token and authenticate user under each test case
+        SO we have handled authentication part by `force authentication`.
+        
+        So any subsequent request to `/api/user/me` gets an already authenticated
+        user
+        
+        """
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_user_profile(self):
+        """Test retriving user information with valid token"""
+
+        res = self.client.get(ME_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {"name": self.user.name,
+                                    "email": self.user.email})
+
+    def test_update_user_profile(self):
+        """Test updating the user profile for an authenticated user"""
+
+        payload = {"name": "updated name", "email": "updated@email.com"}
+        res = self.client.patch(ME_URL, payload)
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.user.name, payload.get("name"))
+        self.assertEqual(self.user.email, payload.get("email"))
+
+    def test_post_me_not_allowed(self):
+        """Test POST is not allowed for the me endpoint"""
+
+        res = self.client.post(ME_URL, {})
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 
